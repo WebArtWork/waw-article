@@ -1,4 +1,5 @@
 {
+	"repo" : "git@github.com:WebArtWork/waw-article.git",
     "name": "Article",
     "router": "index.js schema.js",
     "crud": {
