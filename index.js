@@ -62,7 +62,7 @@ module.exports = async (waw) => {
 						...waw.config,
 						article: articles.pop(),
 						articles,
-						description: 'You can explore various interesting articles about real estate, furniture, new designs, and more! We offer you a collection of engaging and informative materials related to the world of design and interior. You can discover the latest trends, find tips and ideas for decorating your living space, and learn about exciting projects and innovative solutions in the real estate industry.'
+						description: waw.config.articleDescription
 					},
 					waw.translate(req)
 				)
