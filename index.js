@@ -84,7 +84,7 @@ module.exports = async (waw) => {
 				_id: req.params._id
 			});
 
-			const articles = await Article.find({
+			const articles = await waw.Article.find({
 				_id: {
 					$ne: req.params._id
 				}
