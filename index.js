@@ -62,7 +62,9 @@ module.exports = async (waw) => {
 						...waw.config,
 						article: articles.pop(),
 						articles,
-						description: waw.config.articleDescription
+						title: waw.config.articleTitle|| waw.config.title,
+                                                description: waw.config.articleDescription || waw.config.description,
+                                                image: waw.config.articleImage|| waw.config.image,
 					},
 					waw.translate(req)
 				)
@@ -78,7 +80,7 @@ module.exports = async (waw) => {
 		if (typeof waw.serve_article[req.get("host")] === "function") {
 			waw.serve_article[req.get("host")](req, res);
 		} else {
-			const article = await Article.findOne({
+			const article = await waw.Article.findOne({
 				_id: req.params._id
 			});
 
