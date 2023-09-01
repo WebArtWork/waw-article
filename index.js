@@ -60,7 +60,6 @@ module.exports = async (waw) => {
 					path.join(template, "dist", "articles.html"),
 					{
 						...waw.config,
-						article: articles.pop(),
 						articles,
 						title: waw.config.articleTitle|| waw.config.title,
                                                 description: waw.config.articleDescription || waw.config.description,
