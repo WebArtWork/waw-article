@@ -100,14 +100,7 @@ module.exports = async (waw) => {
 	});
 
 	waw.articles = async (query = {}, limit, count = false) => {
-		let exe = count ? waw.Article.countDocuments(query) : waw.Article.find(query);
-
-		if (limit) {
-			exe = exe.limit(limit);
-		}
-
-		return await exe;
-	};
+		return await waw.Article.find(query)};
 
 	waw.article = async (query) => {
 		return await waw.Article.findOne(query);
