@@ -124,4 +124,10 @@ module.exports = async (waw) => {
 			waw.delete_file(doc.thumb);
 		}
 	});
+	await waw.wait(100);
+          if (waw.store_landing) {
+          waw.store_landing.articles = async (query)=>{
+         return await waw.articles(query, 4);
+          }
+       }
 };
