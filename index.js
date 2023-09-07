@@ -3,17 +3,18 @@ const template = path.join(process.cwd(), "template");
 
 module.exports = async (waw) => {
 	waw.crud('article', {
-		get: {
-			query: (req) => {
-				if (req.user.is.admin) {
+		get: [
+			{
+				ensure: waw.next
+			},
+			{
+				name: 'public',
+				ensure: waw.next,
+				query: ()=>{
 					return {};
-				} else {
-					return {
-						moderators: req.user._id
-					};
 				}
 			}
-		},
+		],
 		update: {
 			query: (req) => {
 				if (req.user.is.admin) {
