@@ -63,11 +63,11 @@ module.exports = async (waw) => {
 					path.join(template, "dist", "articles.html"),
 					{
 						...waw.config,
-						articles,
-						categories: waw.tag_groups('article'),
 						title: waw.config.articleTitle|| waw.config.title,
                                                 description: waw.config.articleDescription || waw.config.description,
                                                 image: waw.config.articleImage|| waw.config.image,
+						articles,
+						categories: waw.tag_groups('article'),
 					},
 					waw.translate(req)
 				)
