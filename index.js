@@ -95,6 +95,7 @@ module.exports = async (waw) => {
 				waw.render(path.join(template, "dist", "article.html"), {
 					...waw.config,
 					...{ article, articles },
+					categories: await waw.tag_groups('article')
 				})
 			);
 		}
