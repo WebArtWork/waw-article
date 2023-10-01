@@ -61,8 +61,7 @@ module.exports = async (waw) => {
 						...waw.config,
 						title: waw.config.articleTitle || waw.config.title,
 						description:
-							waw.config.articleDescription ||
-							waw.config.description,
+							waw.config.articleDescription || waw.config.description,
 						image: waw.config.articleImage || waw.config.image,
 						articles,
 						categories: await waw.tag_groups("article"),
@@ -130,7 +129,7 @@ module.exports = async (waw) => {
 		}
 	});
 
-	await waw.wait(500);
+	await waw.wait(2000);
 	if (waw.store_landing) {
 		waw.store_landing.articles = async (query) => {
 			return await waw.articles(query, 4);
