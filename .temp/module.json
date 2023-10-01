@@ -1,0 +1,20 @@
+{
+"repo" : "git@github.com:WebArtWork/waw-article.git",
+ "name": "Article",
+"crud": {
+	"get": ["", "public"],
+        "update": {
+            "keys": [
+				"thumb",
+				"name",
+				"description",
+				"short",
+				"reference",
+				"tag",
+				"data"
+			]
+        },
+        "delete": [""]
+    },
+    "dependencies": {}
+}
