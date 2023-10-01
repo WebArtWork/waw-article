@@ -12,8 +12,8 @@ module.exports = async (waw) => {
 				ensure: waw.next,
 				query: () => {
 					return {};
-				},
-			},
+				}
+			}
 		],
 		update: {
 			query: (req) => {
@@ -27,7 +27,7 @@ module.exports = async (waw) => {
 						_id: req.body._id,
 					};
 				}
-			},
+			}
 		},
 		delete: {
 			query: (req) => {
@@ -41,8 +41,8 @@ module.exports = async (waw) => {
 						_id: req.body._id,
 					};
 				}
-			},
-		},
+			}
+		}
 	});
 
 	waw.build(template, "articles");
