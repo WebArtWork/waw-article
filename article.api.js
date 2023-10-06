@@ -92,16 +92,11 @@ module.exports = async (waw) => {
 		if (typeof waw.serve_article[req.get("host")] === "function") {
 			waw.serve_article[req.get("host")](req, res);
 		} else {
-			const article = await waw.Article.findOne({
-				$or: [
-					{
-						id: req.params._id
-					},
-					{
-						url: req.params._id
-					}
-				]
-			});
+			const article = await waw.Article.findOne(
+			waw.mongoose.Types.ObjectId.isValid(req.params._id)
+				? { _id: req.params._id }
+				: { url: req.params._id }
+			);
 
 			const articles = await waw.Article.find({
 				_id: {
