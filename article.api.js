@@ -53,9 +53,9 @@ module.exports = async (waw) => {
 						req.body.url = url[0] + '_' + (url.length > 1 ? Number(url[1]) + 1 : 1)
 					}
 				next();
-			})
-		}
-	});
+				}
+			}
+		});
 
 	waw.build(template, "articles");
 	waw.serve_articles = {};
