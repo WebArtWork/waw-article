@@ -4,6 +4,7 @@ module.exports = async function(waw) {
 		name: String,
 		short: String,
 		description: String,
+		url: { type: String, sparse: true, trim: true, unique: true },
 		reference: String,
 		global: Boolean,
 		data: {},
@@ -32,6 +33,8 @@ module.exports = async function(waw) {
 		this.thumb = obj.thumb;
 
 		this.tag = obj.tag;
+
+		this.url = obj.url;
 
 		this.name = obj.name;
 
