@@ -42,6 +42,18 @@ module.exports = async (waw) => {
 					};
 				}
 			}
+		},
+		create: {
+			ensure: async (req, res, next)  => {
+				if(req.body.name) {
+					req.body.url = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+					}
+					while (await waw.Article.count({ url: req.body.url })) {
+						const url = req.body.url.split('_');
+						req.body.url = url[0] + '_' + (url.length > 1 ? Number(url[1]) + 1 : 1)
+					}
+				next();
+			})
 		}
 	});
 
@@ -81,7 +93,14 @@ module.exports = async (waw) => {
 			waw.serve_article[req.get("host")](req, res);
 		} else {
 			const article = await waw.Article.findOne({
-				_id: req.params._id,
+				$or: [
+					{
+						id: req.params._id
+					},
+					{
+						url: req.params._id
+					}
+				]
 			});
 
 			const articles = await waw.Article.find({
