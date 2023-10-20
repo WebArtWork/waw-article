@@ -109,7 +109,9 @@ module.exports = async (waw) => {
 					...waw.config,
 					...{ article, articles },
 					categories: await waw.tag_groups("article"),
-				})
+				},
+				waw.translate(req)
+					  )
 			);
 		}
 	});
