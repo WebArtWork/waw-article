@@ -55,7 +55,12 @@ module.exports = async (waw) => {
 				next();
 				}
 			}
-		});
+		})
+		const seo = {
+			title: waw.config.name,
+			description: waw.config.description,
+			image: 'https://body.webart.work/template/img/logo.png'
+	};
 
 	waw.build(template, "articles");
 	waw.serve_articles = {};
