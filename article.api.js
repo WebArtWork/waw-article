@@ -130,6 +130,7 @@ module.exports = async (waw) => {
 		if (limit) {
 			exe = exe.limit(limit);
 		}
+		exe = exe.sort({ _id: -1 });
 		return await exe;
 	};
 	waw.article = async (query) => {
