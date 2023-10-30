@@ -1,6 +1,7 @@
 {
 	"repo": "git@github.com:WebArtWork/waw-article.git",
 	"name": "Article",
+	"unique": [ "url" ],
 	"crud": {
 		"get": [
 			"",
