@@ -6,7 +6,7 @@
 			"",
 			"public"
 		],
-		unique": [ "url" ],
+		"unique": [ "url" ],
 		"update": {
 			"keys": [
 				"thumb",
