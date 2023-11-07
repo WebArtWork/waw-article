@@ -6,7 +6,11 @@ module.exports = async function(waw) {
 		description: String,
 		url: { type: String, sparse: true, trim: true, unique: true },
 		reference: String,
-		global: Boolean,
+		isTemplate: Boolean,
+ 		template: {
+			type: waw.mongoose.Schema.Types.ObjectId,
+			ref: "Article",
+		},
 		data: {},
 		tag: {
 			type: waw.mongoose.Schema.Types.ObjectId,
@@ -46,11 +50,9 @@ module.exports = async function(waw) {
 
 		this.data = obj.data;
 
-		this.global == user.is.admin ? obj.global : false;
+		this.isTemplate = obj.isTemplate;
 
-		if (user.is.admin && obj.global) {
-			this.global = true;
-		}
+		this.template = obj.template;
 	}
 
 	return waw.Article = waw.mongoose.model('Article', Schema);
