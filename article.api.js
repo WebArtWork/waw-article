@@ -13,6 +13,37 @@ module.exports = async (waw) => {
 				query: () => {
 					return {};
 				}
+			},
+			{
+				name: 'noveltys',
+				ensure: waw.next,
+				query: () => {
+					return {
+						isTemplate: true
+					};
+				}
+			},
+			{
+				name: 'links',
+				ensure: async (req, res, next)=>{
+					if (req.user) {
+						req.noveltys_ids = (await waw.Article.find({
+							moderators: req.user._id,
+							isTemplate: true
+						}).select('_id')).map(p => p.id);
+
+						next();
+					} else {
+						res.json([]);
+					}
+				},
+				query: (req) => {
+					return {
+						template: {
+							$in: req.noveltys_ids
+						}
+					};
+				}
 			}
 		],
 		update: {
