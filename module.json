@@ -2,10 +2,7 @@
 	"repo": "git@github.com:WebArtWork/waw-article.git",
 	"name": "Article",
 	"crud": {
-		"get": [
-			"",
-			"public"
-		],
+	"get": ["","public","noveltys","links"],
 		"unique": [ "url" ],
 		"update": {
 			"keys": [
