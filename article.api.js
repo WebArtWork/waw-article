@@ -101,7 +101,7 @@ module.exports = async (waw) => {
 		if (typeof waw.serve_articles[req.get("host")] === "function") {
 			waw.serve_articles[req.get("host")](req, res);
 		} else {
-			const articles = await waw.articles(
+			const articles = await waw.Article.find(
 				req.params.tag_id ? { tag: req.params.tag_id } : {}
 			);
 			res.send(
