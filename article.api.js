@@ -136,12 +136,15 @@ module.exports = async (waw) => {
 				: { url: req.params._id }
 			);
 			
-			const articles = await waw.Article.find({
-				_id: waw.mongoose.Types.ObjectId.isValid(req.params._id) ?
-					{
-						$ne: req.params._id,
-					} : {},
-			}).limit(6);
+			const articles = await waw.Article.find(
+				waw.mongoose.Types.ObjectId.isValid(req.params._id)
+					? {
+							_id: {
+								$ne: req.params._id,
+							},
+					  }
+					: {}
+			).limit(6);
 
 			res.send(
 				waw.render(path.join(template, "dist", "article.html"), {
