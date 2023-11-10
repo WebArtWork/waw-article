@@ -44,6 +44,13 @@ module.exports = async (waw) => {
 						}
 					};
 				}
+			},
+			{
+				name: 'admin',
+				ensure: waw.role('admin'),
+				query: () => {
+					return {};
+				}
 			}
 		],
 		update: {
