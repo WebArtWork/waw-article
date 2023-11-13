@@ -25,7 +25,7 @@ module.exports = async (waw) => {
 			},
 			{
 				name: 'links',
-				ensure: async (req, res, next)=>{
+				ensure: async (req, res, next) => {
 					if (req.user) {
 						req.noveltys_ids = (await waw.Article.find({
 							moderators: req.user._id,
@@ -82,86 +82,87 @@ module.exports = async (waw) => {
 			}
 		},
 		create: {
-			ensure: async (req, res, next)  => {
-				if(req.body.name) {
+			ensure: async (req, res, next) => {
+				if (req.body.name) {
 					req.body.url = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-					}
-				if(req.body.url) {
+				}
+				if (req.body.url) {
 					while (await waw.Article.count({ url: req.body.url })) {
 						const url = req.body.url.split('_');
 						req.body.url = url[0] + '_' + (url.length > 1 ? Number(url[1]) + 1 : 1)
 					}
 				}
 				next();
-				}
 			}
-		})
-		const seo = {
-			title: waw.config.name,
-			description: waw.config.description,
-			image: 'https://body.webart.work/template/img/logo.png'
-	};
-
-	waw.build(template, "articles");
-	waw.serve_articles = {};
-	const articles = async (req, res) => {
-		if (typeof waw.serve_articles[req.get("host")] === "function") {
-			waw.serve_articles[req.get("host")](req, res);
-		} else {
-			const articles = await waw.Article.find(
-				req.params.tag_id ? { tag: req.params.tag_id } : {}
-			);
-			res.send(
-				waw.render(
-					path.join(template, "dist", "articles.html"),
-					{
-						...waw.config,
-						title: waw.config.articleTitle || waw.config.title,
-						description:
-							waw.config.articleDescription || waw.config.description,
-						image: waw.config.articleImage || waw.config.image,
-						articles,
-						categories: await waw.tag_groups("article"),
-					},
-					waw.translate(req)
-				)
-			);
 		}
+	})
+	const seo = {
+		title: waw.config.name,
+		description: waw.config.description,
+		image: 'https://body.webart.work/template/img/logo.png'
 	};
-	waw.app.get("/articles", articles);
-	waw.app.get("/articles/:tag_id", articles);
 
-	waw.build(template, "article");
-	waw.serve_article = {};
-	waw.app.get("/article/:_id", async (req, res) => {
-		if (typeof waw.serve_article[req.get("host")] === "function") {
-			waw.serve_article[req.get("host")](req, res);
-		} else {
-			const article = await waw.Article.findOne(
-			waw.mongoose.Types.ObjectId.isValid(req.params._id)
-				? { _id: req.params._id }
-				: { url: req.params._id }
-			);
-			
-			const articles = await waw.Article.find(
-				waw.mongoose.Types.ObjectId.isValid(req.params._id)
-					? {
-							_id: {
-								$ne: req.params._id,
-							},
-					  }
-					: {}
-			).limit(6);
-
-			res.send(
-				waw.render(path.join(template, "dist", "article.html"), {
+	const articles = async (req, res) => {
+		const articles = await waw.Article.find(
+			req.params.tag_id ? { tag: req.params.tag_id } : {}
+		);
+		res.send(
+			waw.render(
+				path.join(template, "dist", "articles.html"),
+				{
 					...waw.config,
-					...{ article, articles },
+					title: waw.config.articleTitle || waw.config.title,
+					description:
+						waw.config.articleDescription || waw.config.description,
+					image: waw.config.articleImage || waw.config.image,
+					articles,
 					categories: await waw.tag_groups("article"),
 				},
 				waw.translate(req)
-					  )
-			);
+			)
+		);
+	};
+
+	waw.api({
+		domain: waw.config.land,
+		template: {
+			path: template,
+			prefix: "/template",
+			pages: "article articles",
+		},
+		page: {
+			"/test/:any": (req, res) => {
+				res.json(req.urlParams);
+			},
+			"/articles": articles,
+			"/articles/:tag_id": articles,
+			"/article/:_id": async (req, res) => {
+				const article = await waw.Article.findOne(
+					waw.mongoose.Types.ObjectId.isValid(req.params._id)
+						? { _id: req.params._id }
+						: { url: req.params._id }
+				);
+
+				const articles = await waw.Article.find(
+					waw.mongoose.Types.ObjectId.isValid(req.params._id)
+						? {
+							_id: {
+								$ne: req.params._id,
+							},
+						}
+						: {}
+				).limit(6);
+
+				res.send(
+					waw.render(path.join(template, "dist", "article.html"), {
+						...waw.config,
+						...{ article, articles },
+						categories: await waw.tag_groups("article"),
+					},
+						waw.translate(req)
+					)
+				);
+			}
 		}
 	});
 
