@@ -169,7 +169,7 @@ module.exports = async (waw) => {
 		fillJson.footer.articles = fillJson.articles;
 	}
 
-	waw.storeArticle = async (store, fillJson) => {
+	waw.storeArticle = async (store, fillJson, req) => {
 		fillJson.article = await waw.article({
 			 author: store.author,
 			_id: req.params._id  
