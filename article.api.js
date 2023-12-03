@@ -96,11 +96,6 @@ module.exports = async (waw) => {
 			}
 		}
 	})
-	const seo = {
-		title: waw.config.name,
-		description: waw.config.description,
-		image: 'https://body.webart.work/template/img/logo.png'
-	};
 
 	const articles = async (req, res) => {
 		const articles = await waw.Article.find(
@@ -165,6 +160,14 @@ module.exports = async (waw) => {
 			}
 		}
 	});
+
+	waw.storeArticles = async (store, fillJson) => {
+		fillJson.articles = await waw.articles({
+			author: store.author
+		});
+
+		fillJson.footer.articles = fillJson.articles;
+	}
 
 	waw.articles = async (query = {}, limit, count = false) => {
 		let exe = count
