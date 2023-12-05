@@ -165,7 +165,23 @@ module.exports = async (waw) => {
 		fillJson.articles = await waw.articles({
 			author: store.author
 		});
-
+	
+		fillJson.articlesByTag = [];
+		for (const article of fillJson.articles) {
+			const tagObj = fillJson.articlesByTag.find(c => c.id === article.tag.toString());
+			if (tagObj) {
+				tagObj.articles.push(article);
+			} else {
+				const tag = waw.getTag(article.tag);
+				uniqueTagIds.push({
+					id: article.tag,
+					name: tag.name,
+					short: tag.short,
+					tags: [article]
+				})
+			}
+		}
+	
 		fillJson.footer.articles = fillJson.articles;
 	}
 
