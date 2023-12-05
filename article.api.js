@@ -168,6 +168,7 @@ module.exports = async (waw) => {
 	
 		fillJson.articlesByTag = [];
 		for (const article of fillJson.articles) {
+			 if (!article.tag) continue;
 			const tagObj = fillJson.articlesByTag.find(c => c.id === article.tag.toString());
 			if (tagObj) {
 				tagObj.articles.push(article);
