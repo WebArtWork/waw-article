@@ -173,7 +173,7 @@ module.exports = async (waw) => {
 				tagObj.articles.push(article);
 			} else {
 				const tag = waw.getTag(article.tag);
-				uniqueTagIds.push({
+				fillJson.articlesByTag.push({
 					id: article.tag,
 					name: tag.name,
 					short: tag.short,
