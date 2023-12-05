@@ -178,6 +178,15 @@ module.exports = async (waw) => {
 		fillJson.footer.article = fillJson.article;
 	}
 
+	waw.topArticles = async (store, fillJson, req) => {
+		fillJson.topArticles = await waw.topArticles({
+			 author: store.author,
+			_id: req.params._id  
+		});
+
+		fillJson.footer.topArticles = fillJson.topArticles;
+	}
+
 	waw.articles = async (query = {}, limit, count = false) => {
 		let exe = count
 			? waw.Article.countDocuments(query)
