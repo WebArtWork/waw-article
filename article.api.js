@@ -165,25 +165,49 @@ module.exports = async (waw) => {
 		fillJson.articles = await waw.articles({
 			author: store.author
 		});
-	
+
 		fillJson.articlesByTag = [];
 		for (const article of fillJson.articles) {
-			 if (!article.tag) continue;
+			if (!article.tag) continue;
 			const tagObj = fillJson.articlesByTag.find(c => c.id.toString() === article.tag.toString());
 			if (tagObj) {
 				tagObj.articles.push(article);
 			} else {
 				const tag = waw.getTag(article.tag);
+
 				fillJson.articlesByTag.push({
 					id: article.tag,
+					category: tag.category,
 					name: tag.name,
-					short: tag.short,
+					description: tag.description,
 					articles: [article]
 				})
 			}
 		}
-	
-		fillJson.footer.articles = fillJson.articles;
+
+		fillJson.articlesByCategory = [];
+		for (const byTag of fillJson.articlesByTag) {
+			const categoryObj = fillJson.articlesByCategory.find(c => c.id.toString() === byTag.category.toString());
+			if (categoryObj) {
+				categoryObj.tags.push(byTag);
+
+				for (const article of byTag.articles) {
+					if (!categoryObj.articles.find(s => s.id === article.id)) {
+						categoryObj.articles.push(article)
+					}
+				}
+			} else {
+				const category = waw.getCategory(byTag.category);
+
+				fillJson.articlesByCategory.push({
+					id: byTag.category,
+					name: category.name,
+					description: category.description,
+					articles: byTag.articles.slice(),
+					tags: [byTag]
+				})
+			}
+		}
 	}
 
 	waw.storeArticle = async (store, fillJson, req) => {
