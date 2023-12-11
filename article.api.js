@@ -100,7 +100,7 @@ module.exports = async (waw) => {
 	const articles = async (req, res) => {
 		const articles = await waw.Article.find(
 			req.params.tag_id ? { tag: req.params.tag_id } : {}
-		);
+		).limit(10);;
 		res.send(
 			waw.render(
 				path.join(template, "dist", "articles.html"),
