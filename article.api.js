@@ -109,8 +109,10 @@ module.exports = async (waw) => {
 
 	const docs = await waw.Article.find({});
 	for (const doc of docs) {
-		doc.domain = waw.config.land;
-		await doc.save();
+		if (!doc.domain) {
+			doc.domain = 'kp.inua.city';
+			await doc.save();
+		}
 	}
 
 
