@@ -97,7 +97,7 @@ module.exports = async (waw) => {
 		}
 	})
 
-	const articles = async (req, res) => {
+	waw.serveArticles = async (req, res) => {
 		const articles = await waw.Article.find(
 			req.params.tag_id ? { tag: req.params.tag_id } : {}
 		).limit(10);;
@@ -126,12 +126,12 @@ module.exports = async (waw) => {
 			pages: "article articles",
 		},
 		page: {
-			"/test/:any": (req, res) => {
-				res.json(req.urlParams);
-			},
-			"/articles": articles,
-			"/articles/:tag_id": articles,
-			"/article/:_id": async (req, res) => {
+			"/articles": waw.serveArticles,
+			"/articles/:tag_id": waw.serveArticles,
+			"/article/:_id": waw.serveArticle
+		}
+	});
+			waw.storeArticle = async (req, res) => {
 				const article = await waw.Article.findOne(
 					waw.mongoose.Types.ObjectId.isValid(req.params._id)
 						? { _id: req.params._id }
@@ -158,8 +158,7 @@ module.exports = async (waw) => {
 					)
 				);
 			}
-		}
-	});
+
 
 	waw.storeArticles = async (store, fillJson) => {
 		fillJson.articles = await waw.articles({
