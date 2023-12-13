@@ -157,7 +157,7 @@ module.exports = async (waw) => {
 			"/article/:_id": waw.serveArticle
 		}
 	});
-			waw.storeArticle = async (req, res) => {
+			waw.serveArticle = async (req, res) => {
 				const article = await waw.Article.findOne(
 					waw.mongoose.Types.ObjectId.isValid(req.params._id)
 						? { _id: req.params._id }
