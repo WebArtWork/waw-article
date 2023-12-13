@@ -51,6 +51,12 @@ module.exports = async (waw) => {
 				query: () => {
 					return {};
 				}
+			},
+			{
+				ensure: waw.next,
+				query: req => {
+					return { domain: req.get('host') }
+				}
 			}
 		],
 		update: {
@@ -93,14 +99,32 @@ module.exports = async (waw) => {
 					}
 				}
 				next();
+			},
+			ensureDomain: async (req, res, next) => {
+				req.body.domain = req.get('host');
+				next();
 			}
 		}
 	})
 
+	const docs = await waw.Article.find({});
+	for (const doc of docs) {
+		doc.domain = waw.config.land;
+		await doc.save();
+	}
+
+
+
 	waw.serveArticles = async (req, res) => {
-		const articles = await waw.Article.find(
-			req.params.tag_id ? { tag: req.params.tag_id } : {}
-		).limit(10);;
+		const query = {};
+		if (req.params.tag_id) {
+			query.tag = req.params.tag_id;
+		}
+		if (req.get('host') !== waw.config.land) {
+			query.domain = req.get('host');
+		}
+		const articles = await waw.Article.find(query).limit(10);
+
 		res.send(
 			waw.render(
 				path.join(template, "dist", "articles.html"),
