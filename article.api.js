@@ -157,33 +157,100 @@ module.exports = async (waw) => {
 			"/article/:_id": waw.serveArticle
 		}
 	});
-			waw.serveArticle = async (req, res) => {
-				const article = await waw.Article.findOne(
-					waw.mongoose.Types.ObjectId.isValid(req.params._id)
-						? { _id: req.params._id }
-						: { url: req.params._id }
-				);
+	waw.serveArticle = async (req, res) => {
+		const article = await waw.Article.findOne(
+			waw.mongoose.Types.ObjectId.isValid(req.params._id)
+				? { _id: req.params._id }
+				: { url: req.params._id }
+		);
 
-				const articles = await waw.Article.find(
-					waw.mongoose.Types.ObjectId.isValid(req.params._id)
-						? {
-							_id: {
-								$ne: req.params._id,
-							},
-						}
-						: {}
-				).limit(6);
-
-				res.send(
-					waw.render(path.join(template, "dist", "article.html"), {
-						...waw.config,
-						...{ article, articles },
-						categories: await waw.tag_groups("article"),
+		const articles = await waw.Article.find(
+			waw.mongoose.Types.ObjectId.isValid(req.params._id)
+				? {
+					_id: {
+						$ne: req.params._id,
 					},
-						waw.translate(req)
-					)
-				);
+				}
+				: {}
+		).limit(6);
+
+		res.send(
+			waw.render(path.join(template, "dist", "article.html"), {
+				...waw.config,
+				...{ article, articles },
+				categories: await waw.tag_groups("article"),
+			},
+				waw.translate(req)
+			)
+		);
+	}
+
+	waw.operatorArticles = async (operator, fillJson) => {
+		fillJson.articles = await waw.articles({
+			domain: operator.domain
+		});
+
+		fillJson.articlesByTag = [];
+		for (const article of fillJson.articles) {
+			if (!article.tag) continue;
+			const tagObj = fillJson.articlesByTag.find(c => c.id.toString() === article.tag.toString());
+			if (tagObj) {
+				tagObj.articles.push(article);
+			} else {
+				const tag = waw.getTag(article.tag);
+
+				fillJson.articlesByTag.push({
+					id: article.tag,
+					category: tag.category,
+					name: tag.name,
+					description: tag.description,
+					articles: [article]
+				})
 			}
+		}
+
+		fillJson.articlesByCategory = [];
+		for (const byTag of fillJson.articlesByTag) {
+			const categoryObj = fillJson.articlesByCategory.find(c => c.id.toString() === byTag.category.toString());
+			if (categoryObj) {
+				categoryObj.tags.push(byTag);
+
+				for (const article of byTag.articles) {
+					if (!categoryObj.articles.find(s => s.id === article.id)) {
+						categoryObj.articles.push(article)
+					}
+				}
+			} else {
+				const category = waw.getCategory(byTag.category);
+
+				fillJson.articlesByCategory.push({
+					id: byTag.category,
+					name: category.name,
+					description: category.description,
+					articles: byTag.articles.slice(),
+					tags: [byTag]
+				})
+			}
+		}
+	}
+
+	waw.operatorArticle = async (operator, fillJson, req) => {
+		fillJson.article = await waw.article({
+			domain: operator.domain,
+			_id: req.params._id
+		});
+
+		fillJson.footer.article = fillJson.article;
+	}
+
+	waw.operatorTopArticles = async (operator, fillJson) => {
+		fillJson.topArticles = await waw.articles({
+			domain: operator.domain
+		}, 4);
+
+		fillJson.footer.topArticles = fillJson.topArticles;
+	}
+
 
 
 	waw.storeArticles = async (store, fillJson) => {
@@ -237,8 +304,8 @@ module.exports = async (waw) => {
 
 	waw.storeArticle = async (store, fillJson, req) => {
 		fillJson.article = await waw.article({
-			 author: store.author,
-			_id: req.params._id  
+			author: store.author,
+			_id: req.params._id
 		});
 
 		fillJson.footer.article = fillJson.article;
@@ -246,7 +313,7 @@ module.exports = async (waw) => {
 
 	waw.storeTopArticles = async (store, fillJson) => {
 		fillJson.topArticles = await waw.articles({
-			 author: store.author,
+			author: store.author,
 		}, 4);
 
 		fillJson.footer.topArticles = fillJson.topArticles;
