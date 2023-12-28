@@ -92,7 +92,9 @@ module.exports = async (waw) => {
 				if (req.body.name) {
 					req.body.url = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '');
 				}
-				if (req.body.url) {
+				if (!req.body.url) {
+					req.body.url = null; 
+				} else {
 					while (await waw.Article.count({ url: req.body.url })) {
 						const url = req.body.url.split('_');
 						req.body.url = url[0] + '_' + (url.length > 1 ? Number(url[1]) + 1 : 1)
