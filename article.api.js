@@ -1,5 +1,4 @@
 const path = require("path");
-const template = path.join(process.cwd(), "template");
 
 module.exports = async (waw) => {
 	waw.crud("article", {
@@ -108,84 +107,6 @@ module.exports = async (waw) => {
 			}
 		}
 	})
-
-	const docs = await waw.Article.find({});
-	for (const doc of docs) {
-		if (!doc.domain) {
-			doc.domain = waw.config.land;
-			await doc.save();
-		}
-	}
-
-
-
-	waw.serveArticles = async (req, res) => {
-		const query = {};
-		if (req.params.tag_id) {
-			query.tag = req.params.tag_id;
-		}
-		if (req.get('host') !== waw.config.land) {
-			query.domain = req.get('host');
-		}
-		const articles = await waw.Article.find(query).limit(10);
-
-		res.send(
-			waw.render(
-				path.join(template, "dist", "articles.html"),
-				{
-					...waw.config,
-					title: waw.config.articleTitle || waw.config.title,
-					description:
-						waw.config.articleDescription || waw.config.description,
-					image: waw.config.articleImage || waw.config.image,
-					articles,
-					categories: await waw.tag_groups("article"),
-				},
-				waw.translate(req)
-			)
-		);
-	};
-
-	waw.api({
-		domain: waw.config.land,
-		template: {
-			path: template,
-			prefix: "/template",
-			pages: "article articles",
-		},
-		page: {
-			"/articles": waw.serveArticles,
-			"/articles/:tag_id": waw.serveArticles,
-			"/article/:_id": waw.serveArticle
-		}
-	});
-	waw.serveArticle = async (req, res) => {
-		const article = await waw.Article.findOne(
-			waw.mongoose.Types.ObjectId.isValid(req.params._id)
-				? { _id: req.params._id }
-				: { url: req.params._id }
-		);
-
-		const articles = await waw.Article.find(
-			waw.mongoose.Types.ObjectId.isValid(req.params._id)
-				? {
-					_id: {
-						$ne: req.params._id,
-					},
-				}
-				: {}
-		).limit(6);
-
-		res.send(
-			waw.render(path.join(template, "dist", "article.html"), {
-				...waw.config,
-				...{ article, articles },
-				categories: await waw.tag_groups("article"),
-			},
-				waw.translate(req)
-			)
-		);
-	}
 
 	waw.operatorArticles = async (operator, fillJson) => {
 		fillJson.articles = await waw.articles({
