@@ -147,7 +147,7 @@ module.exports = async (waw) => {
 
 	await waw.wait(1000);
 	
-	waw.addJson('operatorArticles', async (fillJson, operator) => {
+	waw.addJson('operatorArticles', async (operator, fillJson) => {
 		fillJson.articles = await waw.articles({
 			domain: operator.domain
 		});
@@ -196,7 +196,7 @@ module.exports = async (waw) => {
 		}
 	}, 'Filling just all article documents');
 
-	waw.addJson('operatorArticle', async (fillJson, operator, req) => {
+	waw.addJson('operatorArticle', async (operator, fillJson, req) => {
 		fillJson.article = await waw.article({
 			domain: operator.domain,
 			_id: req.params._id
@@ -206,7 +206,7 @@ module.exports = async (waw) => {
 	}, 'Filling just all article documents');
 
 
-	waw.addJson('operatorTopArticles', async (fillJson, operator) => {
+	waw.addJson('operatorTopArticles', async (operator, fillJson) => {
 		fillJson.topArticles = await waw.articles({
 			domain: operator.domain
 		}, 4);
@@ -216,7 +216,7 @@ module.exports = async (waw) => {
 
 
 
-	waw.addJson('storeArticles', async (fillJson, store) => {
+	waw.addJson('storeArticles', async (store, fillJson) => {
 		fillJson.articles = await waw.articles({
 			author: store.author
 		});
@@ -266,7 +266,7 @@ module.exports = async (waw) => {
 	}, 'Filling just all article documents');
 
 
-	waw.addJson('storeArticle', async (fillJson, store, req) => {
+	waw.addJson('storeArticle', async (store, fillJson, req) => {
 		fillJson.article = await waw.article({
 			author: store.author,
 			_id: req.params._id
@@ -276,13 +276,11 @@ module.exports = async (waw) => {
 	}, 'Filling just all article documents');
 
 
-	waw.addJson('storeTopArticles', async (fillJson, store) => {
+	waw.addJson('storeTopArticles', async (store, fillJson) => {
 		fillJson.topArticles = await waw.articles({
 			author: store.author,
 		}, 4);
 
 		fillJson.footer.topArticles = fillJson.topArticles;
 	}, 'Filling just all article documents');
-
-	
 };
