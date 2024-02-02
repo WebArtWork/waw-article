@@ -92,7 +92,7 @@ module.exports = async (waw) => {
 					req.body.url = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '');
 				}
 				if (!req.body.url) {
-					req.body.url = null; 
+					req.body.url = null;
 				} else {
 					while (await waw.Article.count({ url: req.body.url })) {
 						const url = req.body.url.split('_');
@@ -108,7 +108,46 @@ module.exports = async (waw) => {
 		}
 	})
 
-	waw.operatorArticles = async (operator, fillJson) => {
+	waw.articles = async (query = {}, limit, count = false) => {
+		let exe = count
+			? waw.Article.countDocuments(query)
+			: waw.Article.find(query);
+		if (limit) {
+			exe = exe.limit(limit);
+		}
+		exe = exe.sort({ _id: -1 });
+		return await exe;
+	};
+	waw.article = async (query) => {
+		return await waw.Article.findOne(query);
+	};
+
+	waw.on("article_create", (doc) => {
+		if (doc.thumb) {
+			waw.save_file(doc.thumb);
+		}
+	});
+	waw.on("article_update", (doc) => {
+		if (doc.thumb) {
+			waw.save_file(doc.thumb);
+		}
+	});
+	waw.on("article_delete", (doc) => {
+		if (doc.thumb) {
+			waw.delete_file(doc.thumb);
+		}
+	});
+
+	await waw.wait(2000);
+	if (waw.store_landing) {
+		waw.store_landing.articles = async (query) => {
+			return await waw.articles(query, 4);
+		};
+	}
+
+	await waw.wait(1000);
+	
+	waw.addJson('operatorArticles', async (fillJson, operator) => {
 		fillJson.articles = await waw.articles({
 			domain: operator.domain
 		});
@@ -155,28 +194,29 @@ module.exports = async (waw) => {
 				})
 			}
 		}
-	}
+	}, 'Filling just all article documents');
 
-	waw.operatorArticle = async (operator, fillJson, req) => {
+	waw.addJson('operatorArticle', async (fillJson, operator, req) => {
 		fillJson.article = await waw.article({
 			domain: operator.domain,
 			_id: req.params._id
 		});
 
 		fillJson.footer.article = fillJson.article;
-	}
+	}, 'Filling just all article documents');
 
-	waw.operatorTopArticles = async (operator, fillJson) => {
+
+	waw.addJson('operatorTopArticles', async (fillJson, operator) => {
 		fillJson.topArticles = await waw.articles({
 			domain: operator.domain
 		}, 4);
 
 		fillJson.footer.topArticles = fillJson.topArticles;
-	}
+	}, 'Filling just all article documents');
 
 
 
-	waw.storeArticles = async (store, fillJson) => {
+	waw.addJson('storeArticles', async (fillJson, store) => {
 		fillJson.articles = await waw.articles({
 			author: store.author
 		});
@@ -223,60 +263,26 @@ module.exports = async (waw) => {
 				})
 			}
 		}
-	}
+	}, 'Filling just all article documents');
 
-	waw.storeArticle = async (store, fillJson, req) => {
+
+	waw.addJson('storeArticle', async (fillJson, store, req) => {
 		fillJson.article = await waw.article({
 			author: store.author,
 			_id: req.params._id
 		});
 
 		fillJson.footer.article = fillJson.article;
-	}
+	}, 'Filling just all article documents');
 
-	waw.storeTopArticles = async (store, fillJson) => {
+
+	waw.addJson('storeTopArticles', async (fillJson, store) => {
 		fillJson.topArticles = await waw.articles({
 			author: store.author,
 		}, 4);
 
 		fillJson.footer.topArticles = fillJson.topArticles;
-	}
+	}, 'Filling just all article documents');
 
-
-	waw.articles = async (query = {}, limit, count = false) => {
-		let exe = count
-			? waw.Article.countDocuments(query)
-			: waw.Article.find(query);
-		if (limit) {
-			exe = exe.limit(limit);
-		}
-		exe = exe.sort({ _id: -1 });
-		return await exe;
-	};
-	waw.article = async (query) => {
-		return await waw.Article.findOne(query);
-	};
-
-	waw.on("article_create", (doc) => {
-		if (doc.thumb) {
-			waw.save_file(doc.thumb);
-		}
-	});
-	waw.on("article_update", (doc) => {
-		if (doc.thumb) {
-			waw.save_file(doc.thumb);
-		}
-	});
-	waw.on("article_delete", (doc) => {
-		if (doc.thumb) {
-			waw.delete_file(doc.thumb);
-		}
-	});
-
-	await waw.wait(2000);
-	if (waw.store_landing) {
-		waw.store_landing.articles = async (query) => {
-			return await waw.articles(query, 4);
-		};
-	}
+	
 };
