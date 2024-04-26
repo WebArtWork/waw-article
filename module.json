@@ -8,6 +8,8 @@
       {
         "name": "admin",
         "keys": [
+          "enabled",
+          "top",
           "thumb",
           "thumbs",
           "name",
@@ -15,6 +17,7 @@
           "price",
           "short",
           "tag",
+          "tags",
           "sale",
           "data"
         ]

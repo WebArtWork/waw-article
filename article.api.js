@@ -138,6 +138,56 @@ module.exports = async (waw) => {
 		}
 	});
 
+	const reloads = {};
+	waw.addJson(
+		"storePrepareArticle",
+		async (store, fillJson, req) => {
+			reloads[store._id] = reloads[store._id] || [];
+			const fillAllArticle = async () => {
+				fillJson.allArticle = await waw.Article.find({
+					tags: {
+						$in: fillJson.tagsIds,
+					},
+				}).lean();
+				for (const article of fillJson.allArticle) {
+					article.id = article._id.toString();
+					article._id = article._id.toString();
+					article.tags = (article.tags||[]).map(t => t.toString());
+				}
+				fillJson.top_article = fillJson.allArticle.filter((p) => {
+					return p.top;
+				});
+			};
+			fillAllArticle();
+			reloads[store._id].push(fillAllArticle);
+		},
+		"Prepare updatable documents of article"
+	);
+	const tagsUpdate = async (tag) => {
+		setTimeout(() => {
+			for (const storeId of (tag.stores || [])) {
+				for (const reload of (reloads[storeId] || [])) {
+					reload();
+				}
+			}
+		}, 2000);
+	};
+	waw.on("tag_create", tagsUpdate);
+	waw.on("tag_update", tagsUpdate);
+	waw.on("tag_delete", tagsUpdate);
+	const articlesUpdate = async (article) => {
+		const tags = await waw.Tag.find({
+			_id: article.tags,
+		});
+		for (const tag of tags) {
+			tagsUpdate(tag);
+		}
+	};
+	waw.on("article_create", articlesUpdate);
+	waw.on("article_update", articlesUpdate);
+	waw.on("article_delete", articlesUpdate);
+
+	/*
 	await waw.wait(2000);
 	if (waw.store_landing) {
 		waw.store_landing.articles = async (query) => {
@@ -146,7 +196,7 @@ module.exports = async (waw) => {
 	}
 
 	await waw.wait(1000);
-	
+
 	waw.addJson('operatorArticles', async (operator, fillJson) => {
 		fillJson.articles = await waw.articles({
 			domain: operator.domain
@@ -283,4 +333,5 @@ module.exports = async (waw) => {
 
 		fillJson.footer.topArticles = fillJson.topArticles;
 	}, 'Filling just all article documents');
+	*/
 };
