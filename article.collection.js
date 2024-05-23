@@ -50,7 +50,9 @@ module.exports = async function(waw) {
 		this.thumb = obj.thumb;
 		this.tags = obj.tags;
 		this.tag = obj.tag;
-		this.url = obj.url;
+		if (obj.url) {
+			this.url = obj.url;
+		}
 		this.name = obj.name;
 		this.domain = obj.domain;
 		this.description = obj.description;
