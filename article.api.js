@@ -4,32 +4,31 @@ module.exports = async (waw) => {
 	waw.crud("article", {
 		get: [
 			{
-				ensure: waw.next,
-			},
-			{
 				name: "public",
 				ensure: waw.next,
 				query: () => {
 					return {};
-				}
+				},
 			},
 			{
-				name: 'noveltys',
+				name: "noveltys",
 				ensure: waw.next,
 				query: () => {
 					return {
-						isTemplate: true
+						isTemplate: true,
 					};
-				}
+				},
 			},
 			{
-				name: 'links',
+				name: "links",
 				ensure: async (req, res, next) => {
 					if (req.user) {
-						req.noveltys_ids = (await waw.Article.find({
-							moderators: req.user._id,
-							isTemplate: true
-						}).select('_id')).map(p => p.id);
+						req.crafts_ids = (
+							await waw.Article.find({
+								moderators: req.user._id,
+								isTemplate: true,
+							}).select("_id")
+						).map((p) => p.id);
 
 						next();
 					} else {
@@ -39,74 +38,68 @@ module.exports = async (waw) => {
 				query: (req) => {
 					return {
 						template: {
-							$in: req.noveltys_ids
-						}
+							$in: req.noveltys_ids,
+						},
 					};
-				}
+				},
 			},
 			{
-				name: 'admin',
-				ensure: waw.role('admin'),
+				name: "admin",
+				ensure: waw.role("admin"),
 				query: () => {
 					return {};
-				}
+				},
 			},
-			{
-				ensure: waw.next,
-				query: req => {
-					return { domain: req.get('host') }
-				}
-			}
+
 		],
 		update: {
+			name: "admin",
+			ensure: waw.role("admin"),
 			query: (req) => {
-				if (req.user.is.admin) {
-					return {
-						_id: req.body._id,
-					};
-				} else {
-					return {
-						moderators: req.user._id,
-						_id: req.body._id,
-					};
-				}
-			}
+				return { _id: req.body._id };
+			},
 		},
 		delete: {
+			name: "admin",
+			ensure: waw.role("admin"),
 			query: (req) => {
-				if (req.user.is.admin) {
-					return {
-						_id: req.body._id,
-					};
-				} else {
-					return {
-						moderators: req.user._id,
-						_id: req.body._id,
-					};
-				}
-			}
+				return { _id: req.body._id };
+			},
+		},
+		fetch: {
+			ensure: waw.next,
+			query: (req) => {
+				return {
+					_id: req.body._id,
+				};
+			},
 		},
 		create: {
 			ensure: async (req, res, next) => {
 				if (req.body.name) {
-					req.body.url = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+					req.body.url = req.body.name
+						.toLowerCase()
+						.replace(/[^a-z0-9]/g, "");
 				}
-				if (!req.body.url) {
-					req.body.url = null;
-				} else {
+				if (req.body.url) {
 					while (await waw.Article.count({ url: req.body.url })) {
-						const url = req.body.url.split('_');
-						req.body.url = url[0] + '_' + (url.length > 1 ? Number(url[1]) + 1 : 1)
+						const url = req.body.url.split("_");
+						req.body.url =
+							url[0] +
+							"_" +
+							(url.length > 1 ? Number(url[1]) + 1 : 1);
 					}
+				} else {
+					delete req.body.url;
 				}
 				next();
 			},
 			ensureDomain: async (req, res, next) => {
-				req.body.domain = req.get('host');
+				req.body.domain = req.get("host");
 				next();
-			}
-		}
-	})
+			},
+		},
+	});
 
 	waw.articles = async (query = {}, limit, count = false) => {
 		let exe = count
@@ -152,7 +145,7 @@ module.exports = async (waw) => {
 				for (const article of fillJson.allArticle) {
 					article.id = article._id.toString();
 					article._id = article._id.toString();
-					article.tags = (article.tags||[]).map(t => t.toString());
+					article.tags = (article.tags || []).map(t => t.toString());
 				}
 				fillJson.top_article = fillJson.allArticle.filter((p) => {
 					return p.top;
