@@ -133,28 +133,33 @@ module.exports = async (waw) => {
 
 	const reloads = {};
 	waw.addJson(
-		"storePrepareArticle",
+		"storePrepareArticles",
 		async (store, fillJson, req) => {
 			reloads[store._id] = reloads[store._id] || [];
-			const fillAllArticle = async () => {
-				fillJson.allArticle = await waw.Article.find({
+			const fillAllArticles = async () => {
+				if (!fillJson.tagsIds) {
+					return setTimeout(fillAllArticles, 500);
+				}
+
+				fillJson.allArticles = await waw.Article.find({
 					tags: {
 						$in: fillJson.tagsIds,
 					},
+					enabled: true
 				}).lean();
-				for (const article of fillJson.allArticle) {
+				for (const article of fillJson.allArticles) {
 					article.id = article._id.toString();
 					article._id = article._id.toString();
 					article.tags = (article.tags || []).map(t => t.toString());
 				}
-				fillJson.top_article = fillJson.allArticle.filter((p) => {
+				fillJson.top_articles = fillJson.allArticles.filter((p) => {
 					return p.top;
 				});
 			};
-			fillAllArticle();
-			reloads[store._id].push(fillAllArticle);
+			fillAllArticles();
+			reloads[store._id].push(fillAllArticles);
 		},
-		"Prepare updatable documents of article"
+		"Prepare updatable documents of products"
 	);
 	const tagsUpdate = async (tag) => {
 		setTimeout(() => {
