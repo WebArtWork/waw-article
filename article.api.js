@@ -156,6 +156,7 @@ module.exports = async (waw) => {
 					return p.top;
 				});
 				console.log(fillJson.top_articles)
+				console.log(fillJson.allArticles)
 			};
 			fillAllArticles();
 			reloads[store._id].push(fillAllArticles);
