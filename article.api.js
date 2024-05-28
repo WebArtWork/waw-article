@@ -1,3 +1,4 @@
+const { log } = require("console");
 const path = require("path");
 
 module.exports = async (waw) => {
@@ -155,8 +156,6 @@ module.exports = async (waw) => {
 				fillJson.top_articles = fillJson.allArticles.filter((p) => {
 					return p.top;
 				});
-				console.log(fillJson.top_articles)
-				console.log(fillJson.allArticles)
 			};
 			fillAllArticles();
 			reloads[store._id].push(fillAllArticles);
@@ -315,6 +314,47 @@ module.exports = async (waw) => {
 		}
 	}, 'Filling just all article documents');
 */
+	const fillTags = (tags, id, fillJson) => {
+		for (const tag of tags) {
+			if (tag._id === id) {
+				tag.active = true;
+				fillJson.products = fillJson.allProducts.filter((p) => {
+					for (tagId of p.tags) {
+						if (tag._id === tagId) {
+							return true;
+						}
+						if (tag.children.includes(tagId)) {
+							return true;
+						}
+					}
+					return false;
+				});
+				tag.tags = fillJson.allTags.filter((t) => {
+					return tag._id === t.parent;
+				});
+			} else if (tag.children.includes(id)) {
+				tag.active = true;
+				tag.tags = fillJson.allTags.filter((t) => {
+					return tag._id === t.parent;
+				});
+				fillTags(tag.tags, id, fillJson);
+			}
+		}
+	};
+	const getTag = (tags) => {
+		for (const tag of tags) {
+			if (tag.active) {
+				return tag;
+			}
+			if (tag.tags) {
+				const innerTag = getTag(tag.tags);
+				if (innerTag) {
+					return innerTag;
+				}
+			}
+		}
+		return false;
+	}
 	waw.addJson('storeArticle', async (store, fillJson, req) => {
 		fillJson.article = await waw.article({
 			author: store.author,
@@ -329,9 +369,9 @@ module.exports = async (waw) => {
 		fillJson.topArticles = await waw.articles({
 			author: store.author,
 		}, 4);
-		
+
 
 		fillJson.footer.topArticles = fillJson.topArticles;
 	}, 'Filling just all article documents');
-	
+
 };
