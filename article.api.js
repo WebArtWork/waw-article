@@ -155,7 +155,7 @@ module.exports = async (waw) => {
 				fillJson.top_articles = fillJson.allArticles.filter((p) => {
 					return p.top;
 				});
-				console.log(top_articles)
+				console.log(fillJson.top_articles)
 			};
 			fillAllArticles();
 			reloads[store._id].push(fillAllArticles);
