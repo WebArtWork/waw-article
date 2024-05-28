@@ -312,8 +312,7 @@ module.exports = async (waw) => {
 			}
 		}
 	}, 'Filling just all article documents');
-
-
+*/
 	waw.addJson('storeArticle', async (store, fillJson, req) => {
 		fillJson.article = await waw.article({
 			author: store.author,
@@ -331,5 +330,5 @@ module.exports = async (waw) => {
 
 		fillJson.footer.topArticles = fillJson.topArticles;
 	}, 'Filling just all article documents');
-	*/
+	
 };
