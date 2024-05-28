@@ -2,11 +2,9 @@
 	"repo": "git@github.com:WebArtWork/waw-article.git",
 	"name": "Article",
 	"crud": {
-	"get": ["","public","noveltys","links", "admin"],
+	"get": ["","public","noveltys","links"],
 		"unique": [ "url" ],
-		 "update": [
-      {
-        "name": "admin",
+		 "update": {
         "keys": [
           "enabled",
           "top",
@@ -14,31 +12,13 @@
           "thumbs",
           "name",
           "description",
-          "price",
           "short",
           "tag",
-          "tags",
           "sale",
           "data"
         ]
       },
-      {
-        "keys": [
-          "enabled",
-          "top",
-          "thumb",
-          "thumbs",
-          "name",
-          "description",
-          "price",
-          "short",
-          "tag",
-          "sale",
-          "data"
-        ]
-      }
-    ],
-    "delete": ["", "admin"]
+    "delete": [""]
   },
   "dependencies": {}
 }
