@@ -155,6 +155,7 @@ module.exports = async (waw) => {
 				fillJson.top_articles = fillJson.allArticles.filter((p) => {
 					return p.top;
 				});
+				console.log(top_articles)
 			};
 			fillAllArticles();
 			reloads[store._id].push(fillAllArticles);
@@ -327,6 +328,7 @@ module.exports = async (waw) => {
 		fillJson.topArticles = await waw.articles({
 			author: store.author,
 		}, 4);
+		
 
 		fillJson.footer.topArticles = fillJson.topArticles;
 	}, 'Filling just all article documents');
