@@ -24,6 +24,8 @@
       },
       {
         "keys": [
+          "enabled",
+          "top",
           "thumb",
           "thumbs",
           "name",
