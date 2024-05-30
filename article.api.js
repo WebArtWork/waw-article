@@ -355,15 +355,27 @@ module.exports = async (waw) => {
 		}
 		return false;
 	}
-	waw.addJson('storeArticle', async (store, fillJson, req) => {
-		fillJson.article = await waw.article({
-			author: store.author,
-			_id: req.params._id
-		});
-
-		fillJson.footer.article = fillJson.article;
-	}, 'Filling just all article documents');
-
+	waw.addJson(
+		"storeArticle",
+		async (store, fillJson, req) => {
+			if (!req.params.tag_id) {
+				for (const tag of fillJson.tags) {
+					tag.tags = [];
+					tag.active = false;
+				}
+			}
+			fillJson.article = fillJson.allArticles.find((p) => {
+				return p._id === req.params.article_id;
+			});
+			if (fillJson.article) {
+				fillJson.title = fillJson.article.name + " | " + store.name;
+			} else {
+				// handle no found article
+			}
+			console.log(req.params, fillJson.article);
+		},
+		"Add tags and product to json"
+	);
 
 	waw.addJson('storeTopArticles', async (store, fillJson) => {
 		fillJson.topArticles = await waw.articles({
